@@ -38,32 +38,22 @@ public class ModelScreen extends Screen {
         LOGGER.info("Renderizando a GUI com a pirâmide.");
         // Setup the matrices
         //Matrix4f matrix4f = new Matrix4f().identity();
-        //Matrix3f matrix3f = new Matrix3f().identity();
+        //Matrix3f matrix3f = new Matrix3f().identity()
 
         graphics.pose().pushPose();
         PoseStack.Pose posestack$pose = graphics.pose().last();
         Matrix4f matrix4f = posestack$pose.pose();
         Matrix3f matrix3f = posestack$pose.normal();
+        VertexConsumer vertexConsumer = graphics.bufferSource().getBuffer(CustomRenderType.polygon(TEXTURE, false));
 
-        // Translate the model into view (you can adjust these values as needed)
-        //matrix4f.translate(0.0f, 0.0f, -3.0f); // Z negativo para trazer o modelo para a frente da câmera
+        graphics.pose().translate(width / 2+0.25, height / 2 + 90, 400);
 
-        // Get the VertexConsumer
-//        VertexConsumer vertexConsumer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(
-//                RenderType.entitySolid(new ResourceLocation("examplemod", "texture/texture2.png"))
-//        );
+        renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, -8, 0, 8, 0, -10, 0, 8, 0, 8, 0,0.5F,1,0,1,0);
+
+        //renderQuad(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f,-8,8,8,-8,8,8,-8,-8,0,0,0,0,0,1,1,0,1,1,0,0);
 
         graphics.renderFakeItem(Items.OAK_LOG.getDefaultInstance(), 0, 0);
 
-       VertexConsumer vertexConsumer = graphics.bufferSource().getBuffer(CustomRenderType.polygon(TEXTURE, false));
-
-
-        //modelInfo.renderModelAll(modelInfo, matrix4f, matrix3f, graphics.bufferSource().getBuffer(CustomRenderType.polygon(Model3DInfo.TEXTURE, false)), 1, 1, 1, 1);
-        //graphics.pose().popPose();
-        //renderTris(matrix4f, matrix3f, graphics.bufferSource().getBuffer(CustomRenderType.polygon(TEXTURE,false)), 1.0f, 1.0f, 1.0f, 1.0f, -8, 0, 8, 0, -10, 0, 8, 0, 8, 0,0.5F,1,0,1,0);
-        // Render a pyramid
-//        graphics.pose().pushPose();
-        renderSimplePyramids(matrix4f, matrix3f, vertexConsumer);
         graphics.pose().popPose();
 
         super.render(graphics, mouseX, mouseY, partialTicks);
@@ -86,6 +76,15 @@ public class ModelScreen extends Screen {
                 0.0f, 0.0f, 0.0f
         );
     }
+    private static void renderQuad(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int x1, int x2, int x3, int x4, float y1, float y2, float y3, float y4, float z1, float z2, float z3, float z4, float u1, float u2, float u3, float u4, float v1, float v2, float v3, float v4) {
+        //addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x2, y1, z1, u2, v1);
+        //addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x1, y1, z1, u2, v2);
+        //addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x1, y2, z2, u1, v2);
+        //addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x2, y2, z2, u1, v1);
+        renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, x1, x2, x3, y1, y2, y3, z1, z2, z3, u1,u2,u3,v1,v2,v3);
+        renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, x1, x3, x4, y1, y3, y4, z1, z3, z4, u1,u3,u4,v1,v3,v4);
+    }
+
     private static void renderTris(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, float x1, float x2, float x3, float y1, float y2, float y3, float z1, float z2, float z3, float u1, float u2, float u3, float v1, float v2, float v3) {
         float normX = (y2-y1) * (z3-z1) - (z2-z1) * (y3-y1);
         float normY = (z2-z1) * (x3-x1) - (x2-x1) * (z3-z1);
