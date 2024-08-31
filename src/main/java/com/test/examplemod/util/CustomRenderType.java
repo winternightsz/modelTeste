@@ -1,4 +1,4 @@
-package com.test.examplemod.gui;
+package com.test.examplemod.util;
 
 import net.minecraft.client.renderer.RenderType;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -36,7 +36,7 @@ public class CustomRenderType extends RenderType{
                 .setShaderState(RENDERTYPE_ENTITY_CUTOUT_NO_CULL_SHADER)
                 .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                .setCullState(NO_CULL)
+                .setCullState(CULL)
                 .setLightmapState(LIGHTMAP)
                 .setOverlayState(OVERLAY).createCompositeState(transparent);
 

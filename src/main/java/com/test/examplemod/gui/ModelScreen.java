@@ -6,7 +6,7 @@ import com.mojang.math.Axis;
 import com.test.examplemod.ExampleMod;
 import com.test.examplemod.model.Model3DInfo;
 import com.test.examplemod.model.ParserEBuilder;
-import net.minecraft.client.Minecraft;
+import com.test.examplemod.util.CustomRenderType;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -28,8 +28,6 @@ public class ModelScreen extends Screen {
 
     private int ticksOpen;
 
-
-
     String modelFilePath = "C:\\Users\\pc\\Documents\\IntelliJTestProjects\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model.tfm";
     Path modelPath = Path.of(modelFilePath);
     ParserEBuilder parser;
@@ -48,17 +46,14 @@ public class ModelScreen extends Screen {
         Matrix3f matrix3f = posestack$pose.normal();
         VertexConsumer vertexConsumer = graphics.bufferSource().getBuffer(CustomRenderType.polygon(TEXTURE, false));
 
-        graphics.pose().translate(width / 2+0.25, height / 2 + 30, 400);
+        graphics.pose().translate(width / 2+0.25, height / 2 - 30, 400);
         graphics.pose().mulPose(Axis.XP.rotationDegrees(-20));
         graphics.pose().mulPose(Axis.YP.rotationDegrees(ticksOpen*4));
-        graphics.pose().scale(10,-10,10);
+        graphics.pose().scale(1,-1,1);
 
         modelMaker();
         modelInfo.renderModelAll(modelInfo, matrix4f, matrix3f, vertexConsumer, 1,1,1,1);
 
-        //renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, -8, 0, 8, 0, -10, 0, 8, 0, 8, 0,0.5F,1,0,1,0);
-
-        //renderQuad(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f,-8,8,8,-8,8,8,-8,-8,0,0,0,0,0,1,1,0,1,1,0,0);
 
         graphics.pose().popPose();
 
@@ -117,10 +112,6 @@ public class ModelScreen extends Screen {
         );
     }
     private static void renderQuad(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int x1, int x2, int x3, int x4, float y1, float y2, float y3, float y4, float z1, float z2, float z3, float z4, float u1, float u2, float u3, float u4, float v1, float v2, float v3, float v4) {
-        //addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x2, y1, z1, u2, v1);
-        //addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x1, y1, z1, u2, v2);
-        //addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x1, y2, z2, u1, v2);
-        //addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x2, y2, z2, u1, v1);
         renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, x1, x2, x3, y1, y2, y3, z1, z2, z3, u1,u2,u3,v1,v2,v3);
         renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, x1, x3, x4, y1, y3, y4, z1, z3, z4, u1,u3,u4,v1,v3,v4);
     }

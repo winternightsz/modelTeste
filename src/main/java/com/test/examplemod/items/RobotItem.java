@@ -3,6 +3,7 @@ package com.test.examplemod.items;
 import com.test.examplemod.gui.ModelScreen;
 import com.test.examplemod.model.Model3DInfo;
 import com.test.examplemod.model.ParserEBuilder;
+import com.test.examplemod.util.ClientOperations;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -12,6 +13,8 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +39,9 @@ public class RobotItem extends Item {
 
             player.playSound(SoundEvents.ANVIL_USE, 1.0F, 1.0F);
 
-        Minecraft.getInstance().setScreen(new ModelScreen(Component.nullToEmpty("Robot Model")));
+        if(level.isClientSide)
+            DistExecutor.safeRunWhenOn(Dist.CLIENT, ()-> ClientOperations::displayGui);
+        //Minecraft.getInstance().setScreen(new ModelScreen(Component.nullToEmpty("kek")));
         itemstack.shrink(stackSize);
 
         return super.use(level, player, hand);
