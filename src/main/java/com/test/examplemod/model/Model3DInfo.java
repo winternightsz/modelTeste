@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.test.examplemod.ExampleMod;
@@ -162,7 +161,7 @@ public class Model3DInfo {
 
     public void renderModelAll (Model3DInfo modelInfo, Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha){
         if (modelInfo.getParts().isEmpty()) {
-            LOGGER.error("Nenhuma parte disponível para renderizar.");
+            //LOGGER.error("Nenhuma parte disponível para renderizar.");
             return;
         }
         //pra poder transformar o poseStack em Pose pra poder pegar o Matrix4f e o Matrix3f
@@ -170,14 +169,14 @@ public class Model3DInfo {
 
         //pose = matrix4f
         //normal = matrix3f
-        LOGGER.info("Entra no metodo renderModelAll");
+        //LOGGER.info("Entra no metodo renderModelAll");
         for (Part part : modelInfo.getParts()) {
 
             renderPart(part, matrix4f, matrix3f, vertexConsumer);
         }
     }
     private void renderPart(Part part, Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer) {
-        LOGGER.info("Entra no metodo renderPart");
+        //LOGGER.info("Entra no metodo renderPart");
         for (Box box : part.getBoxes()) {
             renderBox(box, matrix4f, matrix3f, vertexConsumer);
         }
@@ -187,7 +186,7 @@ public class Model3DInfo {
         }
     }
     private void renderBox(Box box, Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer) {
-        LOGGER.info("Entra no metodo renderBox");
+        //LOGGER.info("Entra no metodo renderBox");
         JsonObject vertices = box.getMeshVertices();
         JsonObject faces = box.getMeshFaces();
 
@@ -215,14 +214,14 @@ public class Model3DInfo {
                 JsonElement vertexElement = vertices.get(vertexKey);
 
                 if (vertexElement == null) {
-                    LOGGER.error("Vértice '{}' não encontrado no objeto meshVertices.", vertexKey);
+                    //LOGGER.error("Vértice '{}' não encontrado no objeto meshVertices.", vertexKey);
                     continue;
                 }
 
                 if (vertexElement.isJsonArray()) {
                     JsonArray vertexArray = vertexElement.getAsJsonArray();
                    if (vertexArray.size() != 3) {
-                       LOGGER.error("O array do vértice '{}' deve conter exatamente 3 valores. Encontrado: {}", vertexKey, vertexArray.size());
+                       //LOGGER.error("O array do vértice '{}' deve conter exatamente 3 valores. Encontrado: {}", vertexKey, vertexArray.size());
                         continue;
                     }
                     x[i] = vertexArray.get(0).getAsFloat() + box.getPosX();
@@ -234,17 +233,17 @@ public class Model3DInfo {
                     y[i] = vertex.get("y").getAsFloat() + box.getPosY();
                     z[i] = vertex.get("z").getAsFloat() + box.getPosZ();
                 } else {
-                    LOGGER.error("Formato inesperado do vértice: {}", vertexElement);
+                    //LOGGER.error("Formato inesperado do vértice: {}", vertexElement);
                     continue;
                 }
 
                 JsonArray uvArray = face.get("uv").getAsJsonObject().get(vertexKey).getAsJsonArray();
                 if (uvArray.size() != 2) {
-                    LOGGER.error("As coordenadas UV devem conter exatamente 2 valores. Encontrado: {}", uvArray.size());
+                    //LOGGER.error("As coordenadas UV devem conter exatamente 2 valores. Encontrado: {}", uvArray.size());
                     continue;
                 }
-                u[i] = 1 / uvArray.get(0).getAsFloat();
-                v[i] = 1 / uvArray.get(1).getAsFloat();
+                u[i] = uvArray.get(0).getAsFloat() / this.getTexWidth();
+                v[i] = uvArray.get(1).getAsFloat() / this.getTexHeight();
             }
 
             //LOGGER.info("Renderizando triângulo {}: x1={}, y1={}, z1={}", triangleCount, x[0], y[0], z[0]);

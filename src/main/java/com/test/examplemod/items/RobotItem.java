@@ -36,7 +36,7 @@ public class RobotItem extends Item {
 
             player.playSound(SoundEvents.ANVIL_USE, 1.0F, 1.0F);
 
-        Minecraft.getInstance().setScreen(new ModelScreen(Component.literal("Robot Model")));
+        Minecraft.getInstance().setScreen(new ModelScreen(Component.nullToEmpty("Robot Model")));
         itemstack.shrink(stackSize);
 
         return super.use(level, player, hand);
