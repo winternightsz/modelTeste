@@ -38,7 +38,7 @@ public class ParserEBuilder {
         return modelInfo;
     }
 
-    private Model3DInfo.Part parsePart(JsonObject partObject) {
+    private static Model3DInfo.Part parsePart(JsonObject partObject) {
         Model3DInfo.Part part = new Model3DInfo.Part();
 
         // Usando setters para definir os valores
@@ -77,7 +77,7 @@ public class ParserEBuilder {
         return part;
     }
 
-    private Model3DInfo.Box parseBox(JsonObject boxObject) {
+    private static Model3DInfo.Box parseBox(JsonObject boxObject) {
         Model3DInfo.Box box = new Model3DInfo.Box();
 
         // Usando setters para definir os valores

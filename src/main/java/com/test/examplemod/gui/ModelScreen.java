@@ -7,6 +7,7 @@ import com.test.examplemod.ExampleMod;
 import com.test.examplemod.model.Model3DInfo;
 import com.test.examplemod.model.ParserEBuilder;
 import com.test.examplemod.util.CustomRenderType;
+import com.test.examplemod.util.CustomResourceListener;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -22,13 +23,13 @@ import java.nio.file.Path;
 @OnlyIn(Dist.CLIENT)
 public class ModelScreen extends Screen {
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ExampleMod.MODID,"texture/piramide.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ExampleMod.MODID,"texture/texture.png");
 
-    private Model3DInfo modelInfo;
+    //private Model3DInfo modelInfo;
 
     private int ticksOpen;
 
-    String modelFilePath = "C:\\Users\\pc\\Documents\\IntelliJTestProjects\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model.tfm";
+    String modelFilePath = "G:\\GitHub\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model_test.tfm";
     Path modelPath = Path.of(modelFilePath);
     ParserEBuilder parser;
 
@@ -51,8 +52,9 @@ public class ModelScreen extends Screen {
         graphics.pose().mulPose(Axis.YP.rotationDegrees(ticksOpen*4));
         graphics.pose().scale(1,-1,1);
 
-        modelMaker();
-        modelInfo.renderModelAll(modelInfo, matrix4f, matrix3f, vertexConsumer, 1,1,1,1);
+        //modelInfo = new CustomResourceListener.modelInfo. ;
+        //modelMaker();
+        CustomResourceListener.modelInfo.renderModelAll(CustomResourceListener.modelInfo, matrix4f, matrix3f, vertexConsumer, 1,1,1,1);
 
 
         graphics.pose().popPose();
@@ -72,26 +74,26 @@ public class ModelScreen extends Screen {
         ++ticksOpen;
     }
 
-    private void modelMaker (){
-
-        try {
-            //LOGGER.info("Carregando modelo 3D a partir de: {}", modelFilePath);
-
-            // Parse o modelo 3D
-            this.parser = new ParserEBuilder();
-            this.modelInfo = this.parser.parseModel(modelPath);
-
-
-            if (modelInfo.getParts().isEmpty()) {
-                //LOGGER.error("Erro: Nenhuma parte foi carregada do modelo 3D.");
-            } else {
-                //LOGGER.info("Modelo 3D carregado com sucesso: {} partes encontradas.", this.modelInfo.getParts().size());
-            }
-        } catch (Exception e) {
-            //LOGGER.error("Falha ao carregar o modelo 3D", e);
-        }
-
-    }
+    //private void modelMaker (){
+    //
+    //    try {
+    //        //LOGGER.info("Carregando modelo 3D a partir de: {}", modelFilePath);
+    //
+    //        // Parse o modelo 3D
+    //        this.parser = new ParserEBuilder();
+    //        this.modelInfo = this.parser.parseModel(modelPath);
+    //
+    //
+    //        if (modelInfo.getParts().isEmpty()) {
+    //            //LOGGER.error("Erro: Nenhuma parte foi carregada do modelo 3D.");
+    //        } else {
+    //            //LOGGER.info("Modelo 3D carregado com sucesso: {} partes encontradas.", this.modelInfo.getParts().size());
+    //        }
+    //    } catch (Exception e) {
+    //        //LOGGER.error("Falha ao carregar o modelo 3D", e);
+    //    }
+    //
+    //}
 
 
     private void renderSimplePyramids(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer) {

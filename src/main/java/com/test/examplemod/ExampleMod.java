@@ -5,6 +5,7 @@ import com.test.examplemod.model.Model3DInfo;
 import com.test.examplemod.model.ParserEBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -118,7 +119,7 @@ public class ExampleMod
     }
 
     private void loadAndParseModel() throws IOException {
-        String modelFilePath = "C:\\Users\\pc\\Documents\\IntelliJTestProjects\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model.tfm";
+        String modelFilePath = "G:\\GitHub\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model.tfm";
         Path modelPath = Path.of(modelFilePath);
 
         ParserEBuilder parser = new ParserEBuilder();
@@ -183,6 +184,8 @@ public class ExampleMod
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
+
+
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
