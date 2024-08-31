@@ -22,6 +22,7 @@ public class RobotItem extends Item {
     private static final Logger LOGGER = LoggerFactory.getLogger(RobotItem.class);
     public static int stackSize;
 
+
     public RobotItem(Properties properties) {
         super(properties);
     }
@@ -32,34 +33,10 @@ public class RobotItem extends Item {
 //            return InteractionResultHolder.pass(player.getItemInHand(hand));
 //        }
         ItemStack itemstack = player.getItemInHand(hand);
-        try {
-
-            String modelFilePath = "C:\\Users\\pc\\Documents\\IntelliJTestProjects\\ParserTest\\src\\main\\resources\\assets\\examplemod\\model\\model.tfm";
-            Path modelPath = Path.of(modelFilePath);
-
-            LOGGER.info("Carregando modelo 3D a partir de: {}", modelFilePath);
-
-            // Parse o modelo 3D
-            ParserEBuilder parser = new ParserEBuilder();
-            Model3DInfo modelInfo = parser.parseModel(modelPath);
-
-
-            if (modelInfo.getParts().isEmpty()) {
-                LOGGER.error("Erro: Nenhuma parte foi carregada do modelo 3D.");
-            } else {
-                LOGGER.info("Modelo 3D carregado com sucesso: {} partes encontradas.", modelInfo.getParts().size());
-            }
 
             player.playSound(SoundEvents.ANVIL_USE, 1.0F, 1.0F);
 
-            // Abra a tela para renderizar o modelo 3D
-            Minecraft.getInstance().setScreen(new ModelScreen(Component.literal("Robot Model"), modelInfo));
-
-
-        } catch (Exception e) {
-            LOGGER.error("Falha ao carregar o modelo 3D", e);
-        }
-
+        Minecraft.getInstance().setScreen(new ModelScreen(Component.literal("Robot Model")));
         itemstack.shrink(stackSize);
 
         return super.use(level, player, hand);

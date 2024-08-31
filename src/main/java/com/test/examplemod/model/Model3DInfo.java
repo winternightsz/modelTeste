@@ -243,8 +243,8 @@ public class Model3DInfo {
                     LOGGER.error("As coordenadas UV devem conter exatamente 2 valores. Encontrado: {}", uvArray.size());
                     continue;
                 }
-                u[i] = uvArray.get(0).getAsFloat();
-                v[i] = uvArray.get(1).getAsFloat();
+                u[i] = 1 / uvArray.get(0).getAsFloat();
+                v[i] = 1 / uvArray.get(1).getAsFloat();
             }
 
             //LOGGER.info("Renderizando triângulo {}: x1={}, y1={}, z1={}", triangleCount, x[0], y[0], z[0]);

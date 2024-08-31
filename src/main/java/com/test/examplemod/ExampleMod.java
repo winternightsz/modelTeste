@@ -109,16 +109,16 @@ public class ExampleMod
 
         Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
 
-//        try {
-//            loadAndParseModel();
-//        } catch (IOException e) {
-//            LOGGER.error("Failed to load model file", e);
-//        }
+        try {
+            loadAndParseModel();
+        } catch (IOException e) {
+            LOGGER.error("Failed to load model file", e);
+        }
 
     }
 
     private void loadAndParseModel() throws IOException {
-        String modelFilePath = "C:\\Users\\pc\\Documents\\IntelliJTestProjects\\ParserTest\\src\\main\\resources\\assets\\examplemod\\model\\model.tfm";
+        String modelFilePath = "C:\\Users\\pc\\Documents\\IntelliJTestProjects\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model.tfm";
         Path modelPath = Path.of(modelFilePath);
 
         ParserEBuilder parser = new ParserEBuilder();

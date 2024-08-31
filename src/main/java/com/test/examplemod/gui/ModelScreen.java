@@ -5,8 +5,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import com.test.examplemod.ExampleMod;
 import com.test.examplemod.model.Model3DInfo;
+import com.test.examplemod.model.ParserEBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,31 +16,41 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.util.Map;
 
+@OnlyIn(Dist.CLIENT)
 public class ModelScreen extends Screen {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelScreen.class);
-    private final Model3DInfo modelInfo;
     public static final ResourceLocation TEXTURE = new ResourceLocation(ExampleMod.MODID,"texture/bricks.png");
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelScreen.class);
+    private Model3DInfo modelInfo;
 
-    public ModelScreen(Component title, Model3DInfo modelInfo) {
+    private int ticksOpen;
+
+
+
+    String modelFilePath = "C:\\Users\\pc\\Documents\\IntelliJTestProjects\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model.tfm";
+    Path modelPath = Path.of(modelFilePath);
+    ParserEBuilder parser;
+
+    public ModelScreen(Component title) {
         super(title);
-        this.modelInfo = modelInfo;
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         LOGGER.info("Renderizando a GUI com a pirâmide.");
-        // Setup the matrices
-        //Matrix4f matrix4f = new Matrix4f().identity();
-        //Matrix3f matrix3f = new Matrix3f().identity()
+
 
         graphics.pose().pushPose();
         PoseStack.Pose posestack$pose = graphics.pose().last();
@@ -46,18 +58,55 @@ public class ModelScreen extends Screen {
         Matrix3f matrix3f = posestack$pose.normal();
         VertexConsumer vertexConsumer = graphics.bufferSource().getBuffer(CustomRenderType.polygon(TEXTURE, false));
 
-        graphics.pose().translate(width / 2+0.25, height / 2 + 90, 400);
+        graphics.pose().translate(width / 2+0.25, height / 2 + 30, 400);
+        graphics.pose().mulPose(Axis.XP.rotationDegrees(-20));
+        graphics.pose().mulPose(Axis.YP.rotationDegrees(ticksOpen*4));
+        graphics.pose().scale(10,-10,10);
 
-        renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, -8, 0, 8, 0, -10, 0, 8, 0, 8, 0,0.5F,1,0,1,0);
+        modelMaker();
+        modelInfo.renderModelAll(modelInfo, matrix4f, matrix3f, vertexConsumer, 1,1,1,1);
+
+        //renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, -8, 0, 8, 0, -10, 0, 8, 0, 8, 0,0.5F,1,0,1,0);
 
         //renderQuad(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f,-8,8,8,-8,8,8,-8,-8,0,0,0,0,0,1,1,0,1,1,0,0);
-
-        graphics.renderFakeItem(Items.OAK_LOG.getDefaultInstance(), 0, 0);
 
         graphics.pose().popPose();
 
         super.render(graphics, mouseX, mouseY, partialTicks);
     }
+
+    @Override
+    protected void init() {
+        super.init();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        ++ticksOpen;
+    }
+
+    private void modelMaker (){
+
+        try {
+            LOGGER.info("Carregando modelo 3D a partir de: {}", modelFilePath);
+
+            // Parse o modelo 3D
+            this.parser = new ParserEBuilder();
+            this.modelInfo = this.parser.parseModel(modelPath);
+
+
+            if (modelInfo.getParts().isEmpty()) {
+                LOGGER.error("Erro: Nenhuma parte foi carregada do modelo 3D.");
+            } else {
+                LOGGER.info("Modelo 3D carregado com sucesso: {} partes encontradas.", this.modelInfo.getParts().size());
+            }
+        } catch (Exception e) {
+            LOGGER.error("Falha ao carregar o modelo 3D", e);
+        }
+
+    }
+
 
     private void renderSimplePyramids(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer) {
         LOGGER.info("Renderizando triângulo");
