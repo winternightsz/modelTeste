@@ -89,6 +89,7 @@ public class ParserEBuilder {
         box.setIdentifier(boxObject.has("identifier") ? boxObject.get("identifier").getAsString() : "");
         box.setName(boxObject.has("name") ? boxObject.get("name").getAsString() : "");
 
+
         return box;
     }
 }

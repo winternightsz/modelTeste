@@ -119,7 +119,7 @@ public class ExampleMod
     }
 
     private void loadAndParseModel() throws IOException {
-        String modelFilePath = "G:\\GitHub\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model.tfm";
+        String modelFilePath = "C:\\Users\\pc\\Documents\\IntelliJTestProjects\\ParserTest\\src\\main\\resources\\assets\\examplemod\\model\\model.tfm";
         Path modelPath = Path.of(modelFilePath);
 
         ParserEBuilder parser = new ParserEBuilder();
@@ -136,6 +136,7 @@ public class ExampleMod
         for (Model3DInfo.Part part : modelInfo.getParts()) {
             logPartInfo(part, 1);
         }
+
     }
 
     private void logPartInfo(Model3DInfo.Part part, int depth) {

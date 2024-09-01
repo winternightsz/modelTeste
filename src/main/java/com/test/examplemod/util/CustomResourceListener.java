@@ -1,7 +1,12 @@
 package com.test.examplemod.util;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.test.examplemod.ExampleMod;
 import com.test.examplemod.model.Model3DInfo;
+import com.test.examplemod.model.ModelFace;
 import com.test.examplemod.model.ParserEBuilder;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -11,8 +16,13 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -22,9 +32,12 @@ public enum CustomResourceListener implements ResourceManagerReloadListener {
     INSTANCE;
 
     public static Model3DInfo modelInfo;
-    String modelFilePath = "G:\\GitHub\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model_test.tfm";
+    String modelFilePath = "C:\\Users\\pc\\Documents\\IntelliJTestProjects\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model_test.tfm";
     Path modelPath = Path.of(modelFilePath);
     ParserEBuilder parser;
+
+    public static List<ModelFace> faceList = new ArrayList<>();
+
 
     @SubscribeEvent
     public static void onRegisterClientReloadListeners(RegisterClientReloadListenersEvent event)
@@ -35,6 +48,7 @@ public enum CustomResourceListener implements ResourceManagerReloadListener {
     @Override
     public void onResourceManagerReload(ResourceManager p_10758_) {
         modelMaker();
+        renderModelCustom(this.modelInfo);
     }
 
     public void modelMaker(){
@@ -51,5 +65,102 @@ public enum CustomResourceListener implements ResourceManagerReloadListener {
 
         }
     }
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    public void renderModelCustom (Model3DInfo modelInfo){
+        if (modelInfo.getParts().isEmpty()) {
+            //LOGGER.error("Nenhuma parte disponível para renderizar.");
+            return;
+        }
+        //pra poder transformar o poseStack em Pose pra poder pegar o Matrix4f e o Matrix3f
+        //PoseStack.Pose poses = posestack.last();
+
+        //pose = matrix4f
+        //normal = matrix3f
+        //LOGGER.info("Entra no metodo renderModelAll");
+        for (Model3DInfo.Part part : modelInfo.getParts()) {
+
+            renderPart(part);
+        }
+    }
+    private void renderPart(Model3DInfo.Part part) {
+        //LOGGER.info("Entra no metodo renderPart");
+
+        for (Model3DInfo.Box box : part.getBoxes()) {
+            renderBox(box);
+        }
+
+        for (Model3DInfo.Part childPart : part.getChildren()) {
+            renderPart(childPart);
+        }
+
+    }
+    private void renderBox(Model3DInfo.Box box) {
+        //LOGGER.info("Entra no metodo renderBox");
+
+        JsonObject vertices = box.getMeshVertices();
+        JsonObject faces = box.getMeshFaces();
+        int faceindex = 0;
+
+        //aqui vai montar as faces
+        for (Map.Entry<String, JsonElement> faceEntry : faces.entrySet()) {
+
+            JsonObject face = faceEntry.getValue().getAsJsonObject();
+            JsonArray verticesArray = face.get("vertices").getAsJsonArray();
+
+            //cria um array de 3 vertices e uv points
+            float[] x = new float[3];
+            float[] y = new float[3];
+            float[] z = new float[3];
+            float[] u = new float[3];
+            float[] v = new float[3];
+
+            for (int i = 0; i < 3; i++) {
+                String vertexKey = verticesArray.get(i).getAsString();
+                JsonElement vertexElement = vertices.get(vertexKey);
+
+                if (vertexElement == null) {
+                    //LOGGER.error("Vértice '{}' não encontrado no objeto meshVertices.", vertexKey);
+                    continue;
+                }
+
+                if (vertexElement.isJsonArray()) {
+                    JsonArray vertexArray = vertexElement.getAsJsonArray();
+                    if (vertexArray.size() != 3) {
+                        //LOGGER.error("O array do vértice '{}' deve conter exatamente 3 valores. Encontrado: {}", vertexKey, vertexArray.size());
+                        continue;
+                    }
+                    x[i] = vertexArray.get(0).getAsFloat() + box.getPosX();
+                    y[i] = vertexArray.get(1).getAsFloat() + box.getPosY();
+                    z[i] = vertexArray.get(2).getAsFloat() + box.getPosZ();
+                } else if (vertexElement.isJsonObject()) {
+                    JsonObject vertex = vertexElement.getAsJsonObject();
+                    x[i] = vertex.get("x").getAsFloat() + box.getPosX();
+                    y[i] = vertex.get("y").getAsFloat() + box.getPosY();
+                    z[i] = vertex.get("z").getAsFloat() + box.getPosZ();
+                } else {
+                    //LOGGER.error("Formato inesperado do vértice: {}", vertexElement);
+                    continue;
+                }
+
+                JsonArray uvArray = face.get("uv").getAsJsonObject().get(vertexKey).getAsJsonArray();
+                if (uvArray.size() != 2) {
+                    //LOGGER.error("As coordenadas UV devem conter exatamente 2 valores. Encontrado: {}", uvArray.size());
+                    continue;
+                }
+                u[i] = uvArray.get(0).getAsFloat();
+                v[i] = uvArray.get(1).getAsFloat();
+
+            }
+            ModelFace modelface = new ModelFace(x,y,z,u,v);
+
+            faceList.add(faceindex,modelface);
+            faceindex++;
+        }
+
+
+    }
+
+
 
 }

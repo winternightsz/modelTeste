@@ -29,10 +29,6 @@ public class ModelScreen extends Screen {
 
     private int ticksOpen;
 
-    String modelFilePath = "G:\\GitHub\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model_test.tfm";
-    Path modelPath = Path.of(modelFilePath);
-    ParserEBuilder parser;
-
     public ModelScreen(Component title) {
         super(title);
     }
@@ -50,10 +46,11 @@ public class ModelScreen extends Screen {
         graphics.pose().translate(width / 2+0.25, height / 2 - 30, 400);
         graphics.pose().mulPose(Axis.XP.rotationDegrees(-20));
         graphics.pose().mulPose(Axis.YP.rotationDegrees(ticksOpen*4));
-        graphics.pose().scale(1,-1,1);
+        graphics.pose().scale(10,-10,10);
 
         //modelInfo = new CustomResourceListener.modelInfo. ;
         //modelMaker();
+
         CustomResourceListener.modelInfo.renderModelAll(CustomResourceListener.modelInfo, matrix4f, matrix3f, vertexConsumer, 1,1,1,1);
 
 

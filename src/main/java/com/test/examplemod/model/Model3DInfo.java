@@ -1,21 +1,17 @@
 package com.test.examplemod.model;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.test.examplemod.ExampleMod;
+
+import com.test.examplemod.util.CustomResourceListener;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
-import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 public class Model3DInfo {
@@ -160,103 +156,21 @@ public class Model3DInfo {
     }
 
     public void renderModelAll (Model3DInfo modelInfo, Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha){
-        if (modelInfo.getParts().isEmpty()) {
-            //LOGGER.error("Nenhuma parte disponível para renderizar.");
-            return;
-        }
-        //pra poder transformar o poseStack em Pose pra poder pegar o Matrix4f e o Matrix3f
-        //PoseStack.Pose poses = posestack.last();
 
-        //pose = matrix4f
-        //normal = matrix3f
-        //LOGGER.info("Entra no metodo renderModelAll");
-        for (Part part : modelInfo.getParts()) {
+        for (ModelFace modelFace : CustomResourceListener.faceList) {
+            float[] x = modelFace.getX();
+            float[] y = modelFace.getY();
+            float[] z = modelFace.getZ();
+            float[] u = modelFace.getU();
+            float[] v = modelFace.getV();
 
-            renderPart(part, matrix4f, matrix3f, vertexConsumer);
+            renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, x[0], x[1], x[2], y[0], y[1], y[2], z[0], z[1], z[2], u[0]/ this.getTexWidth(), u[1]/ this.getTexWidth(), u[2]/ this.getTexWidth(), v[0]/ this.getTexHeight(), v[1]/ this.getTexHeight(),v[2]/ this.getTexHeight());
+
+            System.out.println(x[0] + " , " + y[0]+ " , " + z[0] + " , " + u[0] + " , " + v[0]);
         }
+
     }
-    private void renderPart(Part part, Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer) {
-        //LOGGER.info("Entra no metodo renderPart");
-        for (Box box : part.getBoxes()) {
-            renderBox(box, matrix4f, matrix3f, vertexConsumer);
-        }
 
-        for (Part childPart : part.getChildren()) {
-            renderPart(childPart, matrix4f, matrix3f, vertexConsumer);
-        }
-    }
-    private void renderBox(Box box, Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer) {
-        //LOGGER.info("Entra no metodo renderBox");
-        JsonObject vertices = box.getMeshVertices();
-        JsonObject faces = box.getMeshFaces();
-
-        // Limite de triângulos para renderizar (para depuração)
-        int triangleCount = 0;
-        int maxTriangles = 3;  // Ajuste esse valor conforme necessário
-        //aqui vai montar as faces
-        for (Map.Entry<String, JsonElement> faceEntry : faces.entrySet()) {
-            JsonObject face = faceEntry.getValue().getAsJsonObject();
-            JsonArray verticesArray = face.get("vertices").getAsJsonArray();
-
-//            if (verticesArray.size() != 3) {
-//                LOGGER.error("Cada face deve ter exatamente 3 vértices. Encontrado: {}", verticesArray.size());
-//                continue;
-//            }
-            //cria um array de 3 vertices e uv points
-            float[] x = new float[3];
-            float[] y = new float[3];
-            float[] z = new float[3];
-            float[] u = new float[3];
-            float[] v = new float[3];
-
-            for (int i = 0; i < 3; i++) {
-                String vertexKey = verticesArray.get(i).getAsString();
-                JsonElement vertexElement = vertices.get(vertexKey);
-
-                if (vertexElement == null) {
-                    //LOGGER.error("Vértice '{}' não encontrado no objeto meshVertices.", vertexKey);
-                    continue;
-                }
-
-                if (vertexElement.isJsonArray()) {
-                    JsonArray vertexArray = vertexElement.getAsJsonArray();
-                   if (vertexArray.size() != 3) {
-                       //LOGGER.error("O array do vértice '{}' deve conter exatamente 3 valores. Encontrado: {}", vertexKey, vertexArray.size());
-                        continue;
-                    }
-                    x[i] = vertexArray.get(0).getAsFloat() + box.getPosX();
-                    y[i] = vertexArray.get(1).getAsFloat() + box.getPosY();
-                    z[i] = vertexArray.get(2).getAsFloat() + box.getPosZ();
-                } else if (vertexElement.isJsonObject()) {
-                    JsonObject vertex = vertexElement.getAsJsonObject();
-                    x[i] = vertex.get("x").getAsFloat() + box.getPosX();
-                    y[i] = vertex.get("y").getAsFloat() + box.getPosY();
-                    z[i] = vertex.get("z").getAsFloat() + box.getPosZ();
-                } else {
-                    //LOGGER.error("Formato inesperado do vértice: {}", vertexElement);
-                    continue;
-                }
-
-                JsonArray uvArray = face.get("uv").getAsJsonObject().get(vertexKey).getAsJsonArray();
-                if (uvArray.size() != 2) {
-                    //LOGGER.error("As coordenadas UV devem conter exatamente 2 valores. Encontrado: {}", uvArray.size());
-                    continue;
-                }
-                u[i] = uvArray.get(0).getAsFloat() / this.getTexWidth();
-                v[i] = uvArray.get(1).getAsFloat() / this.getTexHeight();
-            }
-
-            //LOGGER.info("Renderizando triângulo {}: x1={}, y1={}, z1={}", triangleCount, x[0], y[0], z[0]);
-
-            renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, x[0], x[1], x[2], y[0], y[1], y[2], z[0], z[1], z[2], u[0], u[1], u[2], v[0], v[1],v[2]);
-
-//            triangleCount++;
-//            if (triangleCount >= maxTriangles) {
-//                LOGGER.warn("Limite de {} triângulos atingido. Interrompendo a renderização.", maxTriangles);
-//                break;
-//            }
-        }
-    }
 
     private static void renderTris(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, float x1, float x2, float x3, float y1, float y2, float y3, float z1, float z2, float z3, float u1, float u2, float u3, float v1, float v2, float v3) {
         float normX = (y2-y1) * (z3-z1) - (z2-z1) * (y3-y1);
@@ -271,4 +185,105 @@ public class Model3DInfo {
         vertexConsumer.vertex(matrix4f, x, y, z).color(red, green, blue, alpha).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(matrix3f, normX, normY, normZ).endVertex();
     }
 
+//    public void renderModelAll (Model3DInfo modelInfo, Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha){
+//        if (modelInfo.getParts().isEmpty()) {
+//            //LOGGER.error("Nenhuma parte disponível para renderizar.");
+//            return;
+//        }
+//        //pra poder transformar o poseStack em Pose pra poder pegar o Matrix4f e o Matrix3f
+//        //PoseStack.Pose poses = posestack.last();
+//
+//        //pose = matrix4f
+//        //normal = matrix3f
+//        //LOGGER.info("Entra no metodo renderModelAll");
+//        for (Part part : modelInfo.getParts()) {
+//
+//            renderPart(part, matrix4f, matrix3f, vertexConsumer);
+//        }
+//    }
+//    private void renderPart(Part part, Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer) {
+//        //LOGGER.info("Entra no metodo renderPart");
+//
+//        for (Box box : part.getBoxes()) {
+//            renderBox(box, matrix4f, matrix3f, vertexConsumer);
+//        }
+//
+//        for (Part childPart : part.getChildren()) {
+//            renderPart(childPart, matrix4f, matrix3f, vertexConsumer);
+//        }
+//
+//    }
+//    private void renderBox(Box box, Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer) {
+//        //LOGGER.info("Entra no metodo renderBox");
+//
+//        JsonObject vertices = box.getMeshVertices();
+//        JsonObject faces = box.getMeshFaces();
+//
+//        // Limite de triângulos para renderizar (para depuração)
+//        int triangleCount = 0;
+//        int maxTriangles = 3;  // Ajuste esse valor conforme necessário
+//        //aqui vai montar as faces
+//        for (Map.Entry<String, JsonElement> faceEntry : faces.entrySet()) {
+//            JsonObject face = faceEntry.getValue().getAsJsonObject();
+//            JsonArray verticesArray = face.get("vertices").getAsJsonArray();
+//
+////            if (verticesArray.size() != 3) {
+////                LOGGER.error("Cada face deve ter exatamente 3 vértices. Encontrado: {}", verticesArray.size());
+////                continue;
+////            }
+//            //cria um array de 3 vertices e uv points
+//            float[] x = new float[3];
+//            float[] y = new float[3];
+//            float[] z = new float[3];
+//            float[] u = new float[3];
+//            float[] v = new float[3];
+//
+//            for (int i = 0; i < 3; i++) {
+//                String vertexKey = verticesArray.get(i).getAsString();
+//                JsonElement vertexElement = vertices.get(vertexKey);
+//
+//                if (vertexElement == null) {
+//                    //LOGGER.error("Vértice '{}' não encontrado no objeto meshVertices.", vertexKey);
+//                    continue;
+//                }
+//
+//                if (vertexElement.isJsonArray()) {
+//                    JsonArray vertexArray = vertexElement.getAsJsonArray();
+//                   if (vertexArray.size() != 3) {
+//                       //LOGGER.error("O array do vértice '{}' deve conter exatamente 3 valores. Encontrado: {}", vertexKey, vertexArray.size());
+//                        continue;
+//                    }
+//                    x[i] = vertexArray.get(0).getAsFloat() + box.getPosX();
+//                    y[i] = vertexArray.get(1).getAsFloat() + box.getPosY();
+//                    z[i] = vertexArray.get(2).getAsFloat() + box.getPosZ();
+//                } else if (vertexElement.isJsonObject()) {
+//                    JsonObject vertex = vertexElement.getAsJsonObject();
+//                    x[i] = vertex.get("x").getAsFloat() + box.getPosX();
+//                    y[i] = vertex.get("y").getAsFloat() + box.getPosY();
+//                    z[i] = vertex.get("z").getAsFloat() + box.getPosZ();
+//                } else {
+//                    //LOGGER.error("Formato inesperado do vértice: {}", vertexElement);
+//                    continue;
+//                }
+//
+//                JsonArray uvArray = face.get("uv").getAsJsonObject().get(vertexKey).getAsJsonArray();
+//                if (uvArray.size() != 2) {
+//                    //LOGGER.error("As coordenadas UV devem conter exatamente 2 valores. Encontrado: {}", uvArray.size());
+//                    continue;
+//                }
+//                u[i] = uvArray.get(0).getAsFloat() / this.getTexWidth();
+//                v[i] = uvArray.get(1).getAsFloat() / this.getTexHeight();
+//            }
+//
+//            //LOGGER.info("Renderizando triângulo {}: x1={}, y1={}, z1={}", triangleCount, x[0], y[0], z[0]);
+//
+//            renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, x[0], x[1], x[2], y[0], y[1], y[2], z[0], z[1], z[2], u[0], u[1], u[2], v[0], v[1],v[2]);
+//
+////            triangleCount++;
+////            if (triangleCount >= maxTriangles) {
+////                LOGGER.warn("Limite de {} triângulos atingido. Interrompendo a renderização.", maxTriangles);
+////                break;
+////            }
+//        }
+//    }
 }
