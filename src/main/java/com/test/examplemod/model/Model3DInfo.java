@@ -177,7 +177,9 @@ public class Model3DInfo {
         float normX = modelFace.getNormX();
         float normY = modelFace.getNormY();
         float normZ = modelFace.getNormZ();
-
+//        float normX = (y[1]-y[0]) * (z[2]-z[0]) - (z[1]-z[0]) * (y[2]-y[0]);
+//        float normY = (z[1]-z[0]) * (x[2]-x[0]) - (x[1]-x[0]) * (z[2]-z[0]);
+//        float normZ = (x[1]-x[0]) * (y[2]-y[0]) - (y[1]-y[0]) * (x[2]-x[0]);
 
         addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x[0], y[0], z[0], u[0] / getTexWidth(), v[0] / getTexHeight(), normX, normY, normZ);
         addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x[1], y[1], z[1], u[1] / getTexWidth(), v[1] / getTexHeight(), normX, normY, normZ);

@@ -108,9 +108,7 @@ public enum CustomResourceListener implements ResourceManagerReloadListener {
             float[] u = new float[3];
             float[] v = new float[3];
 
-            float normX = (y[1]-y[0]) * (z[2]-z[0]) - (z[1]-z[0]) * (y[2]-y[0]);
-            float normY = (z[1]-z[0]) * (x[2]-x[0]) - (x[1]-x[0]) * (z[2]-z[0]);
-            float normZ = (x[1]-x[0]) * (y[2]-y[0]) - (y[1]-y[0]) * (x[2]-x[0]);
+
 
             for (int i = 0; i < 3; i++) {
                 String vertexKey = verticesArray.get(i).getAsString();
@@ -149,6 +147,11 @@ public enum CustomResourceListener implements ResourceManagerReloadListener {
                 v[i] = uvArray.get(1).getAsFloat();
 
             }
+
+            float normX = (y[1]-y[0]) * (z[2]-z[0]) - (z[1]-z[0]) * (y[2]-y[0]);
+            float normY = (z[1]-z[0]) * (x[2]-x[0]) - (x[1]-x[0]) * (z[2]-z[0]);
+            float normZ = (x[1]-x[0]) * (y[2]-y[0]) - (y[1]-y[0]) * (x[2]-x[0]);
+
             ModelFace modelface = new ModelFace(x, y, z, u, v, normX, normY, normZ);
 
             faceList.add(faceindex,modelface);

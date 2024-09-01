@@ -7,9 +7,9 @@ public class ModelFace {
     float[] z = new float[3];
     float[] u = new float[3];
     float[] v = new float[3];
-    static float normX;
-    static float normY;
-    static float normZ;
+    float normX;
+    float normY;
+    float normZ;
 
     public ModelFace(float[] x, float[] y, float[] z, float[] u, float[] v, float normX, float normY, float normZ) {
         this.x = x;

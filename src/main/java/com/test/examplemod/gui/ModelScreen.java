@@ -53,7 +53,6 @@ public class ModelScreen extends Screen {
 
         CustomResourceListener.modelInfo.renderModelAll(CustomResourceListener.modelInfo, matrix4f, matrix3f, vertexConsumer, 1,1,1,1);
 
-
         graphics.pose().popPose();
 
         super.render(graphics, mouseX, mouseY, partialTicks);
