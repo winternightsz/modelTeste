@@ -7,13 +7,19 @@ public class ModelFace {
     float[] z = new float[3];
     float[] u = new float[3];
     float[] v = new float[3];
+    static float normX;
+    static float normY;
+    static float normZ;
 
-    public ModelFace(float[] x, float[] y, float[] z, float[] u, float[] v) {
+    public ModelFace(float[] x, float[] y, float[] z, float[] u, float[] v, float normX, float normY, float normZ) {
         this.x = x;
         this.v = v;
         this.u = u;
         this.z = z;
         this.y = y;
+        this.normX = normX;
+        this.normY = normY;
+        this.normZ = normZ;
     }
 
     public float[] getX() {
@@ -34,5 +40,17 @@ public class ModelFace {
 
     public float[] getV() {
         return v;
+    }
+
+    public float getNormX() {
+        return normX;
+    }
+
+    public float getNormY() {
+        return normY;
+    }
+
+    public float getNormZ() {
+        return normZ;
     }
 }

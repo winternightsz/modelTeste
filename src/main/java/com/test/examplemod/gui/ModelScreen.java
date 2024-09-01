@@ -23,7 +23,7 @@ import java.nio.file.Path;
 @OnlyIn(Dist.CLIENT)
 public class ModelScreen extends Screen {
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ExampleMod.MODID,"texture/texture.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(ExampleMod.MODID,"texture/ironhide.png");
 
     //private Model3DInfo modelInfo;
 
@@ -43,10 +43,10 @@ public class ModelScreen extends Screen {
         Matrix3f matrix3f = posestack$pose.normal();
         VertexConsumer vertexConsumer = graphics.bufferSource().getBuffer(CustomRenderType.polygon(TEXTURE, false));
 
-        graphics.pose().translate(width / 2+0.25, height / 2 - 30, 400);
+        graphics.pose().translate(width / 2+0.25, height / 2 + 50, 400);
         graphics.pose().mulPose(Axis.XP.rotationDegrees(-20));
         graphics.pose().mulPose(Axis.YP.rotationDegrees(ticksOpen*4));
-        graphics.pose().scale(10,-10,10);
+        graphics.pose().scale(2,-2,2);
 
         //modelInfo = new CustomResourceListener.modelInfo. ;
         //modelMaker();

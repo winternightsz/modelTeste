@@ -3,28 +3,21 @@ package com.test.examplemod.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.test.examplemod.ExampleMod;
 import com.test.examplemod.model.Model3DInfo;
 import com.test.examplemod.model.ModelFace;
 import com.test.examplemod.model.ParserEBuilder;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = ExampleMod.MODID)
 public enum CustomResourceListener implements ResourceManagerReloadListener {
@@ -32,7 +25,7 @@ public enum CustomResourceListener implements ResourceManagerReloadListener {
     INSTANCE;
 
     public static Model3DInfo modelInfo;
-    String modelFilePath = "C:\\Users\\pc\\Documents\\IntelliJTestProjects\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\model_test.tfm";
+    String modelFilePath = "G:\\Github\\modelTeste\\src\\main\\resources\\assets\\examplemod\\model\\ironhide.tfm";
     Path modelPath = Path.of(modelFilePath);
     ParserEBuilder parser;
 
@@ -72,11 +65,11 @@ public enum CustomResourceListener implements ResourceManagerReloadListener {
             //LOGGER.error("Nenhuma parte disponível para renderizar.");
             return;
         }
-        //pra poder transformar o poseStack em Pose pra poder pegar o Matrix4f e o Matrix3f
+        //pra poder transformar o poseStack em Pose pra poder pegar o Matrix4f e o Matrix[2]f
         //PoseStack.Pose poses = posestack.last();
 
         //pose = matrix4f
-        //normal = matrix3f
+        //normal = matrix[2]f
         //LOGGER.info("Entra no metodo renderModelAll");
         for (Model3DInfo.Part part : modelInfo.getParts()) {
 
@@ -115,6 +108,10 @@ public enum CustomResourceListener implements ResourceManagerReloadListener {
             float[] u = new float[3];
             float[] v = new float[3];
 
+            float normX = (y[1]-y[0]) * (z[2]-z[0]) - (z[1]-z[0]) * (y[2]-y[0]);
+            float normY = (z[1]-z[0]) * (x[2]-x[0]) - (x[1]-x[0]) * (z[2]-z[0]);
+            float normZ = (x[1]-x[0]) * (y[2]-y[0]) - (y[1]-y[0]) * (x[2]-x[0]);
+
             for (int i = 0; i < 3; i++) {
                 String vertexKey = verticesArray.get(i).getAsString();
                 JsonElement vertexElement = vertices.get(vertexKey);
@@ -152,7 +149,7 @@ public enum CustomResourceListener implements ResourceManagerReloadListener {
                 v[i] = uvArray.get(1).getAsFloat();
 
             }
-            ModelFace modelface = new ModelFace(x,y,z,u,v);
+            ModelFace modelface = new ModelFace(x, y, z, u, v, normX, normY, normZ);
 
             faceList.add(faceindex,modelface);
             faceindex++;

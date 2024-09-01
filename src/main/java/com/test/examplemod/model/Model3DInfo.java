@@ -19,7 +19,8 @@ public class Model3DInfo {
     private int version;
     private List<String> notes;
     private float scaleX, scaleY, scaleZ;
-    private int texWidth, texHeight;
+    private static int texWidth;
+    private static int texHeight;
     private String textureFile;
     private List<Part> parts;
 
@@ -142,10 +143,10 @@ public class Model3DInfo {
     public float getScaleZ() { return scaleZ; }
     public void setScaleZ(float scaleZ) { this.scaleZ = scaleZ; }
 
-    public int getTexWidth() { return texWidth; }
+    public static int getTexWidth() { return texWidth; }
     public void setTexWidth(int texWidth) { this.texWidth = texWidth; }
 
-    public int getTexHeight() { return texHeight; }
+    public static int getTexHeight() { return texHeight; }
     public void setTexHeight(int texHeight) { this.texHeight = texHeight; }
 
     public List<Part> getParts() {
@@ -158,27 +159,29 @@ public class Model3DInfo {
     public void renderModelAll (Model3DInfo modelInfo, Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha){
 
         for (ModelFace modelFace : CustomResourceListener.faceList) {
-            float[] x = modelFace.getX();
-            float[] y = modelFace.getY();
-            float[] z = modelFace.getZ();
-            float[] u = modelFace.getU();
-            float[] v = modelFace.getV();
 
-            renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, x[0], x[1], x[2], y[0], y[1], y[2], z[0], z[1], z[2], u[0]/ this.getTexWidth(), u[1]/ this.getTexWidth(), u[2]/ this.getTexWidth(), v[0]/ this.getTexHeight(), v[1]/ this.getTexHeight(),v[2]/ this.getTexHeight());
+            renderTris(matrix4f, matrix3f, vertexConsumer, 1.0f, 1.0f, 1.0f, 1.0f, modelFace);
 
-            System.out.println(x[0] + " , " + y[0]+ " , " + z[0] + " , " + u[0] + " , " + v[0]);
+            //System.out.println(x[0] + " , " + y[0]+ " , " + z[0] + " , " + u[0] + " , " + v[0]);
         }
 
     }
 
 
-    private static void renderTris(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, float x1, float x2, float x3, float y1, float y2, float y3, float z1, float z2, float z3, float u1, float u2, float u3, float v1, float v2, float v3) {
-        float normX = (y2-y1) * (z3-z1) - (z2-z1) * (y3-y1);
-        float normY = (z2-z1) * (x3-x1) - (x2-x1) * (z3-z1);
-        float normZ = (x2-x1) * (y3-y1) - (y2-y1) * (x3-x1);
-        addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x1, y1, z1, u1, v1, normX, normY, normZ);
-        addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x2, y2, z2, u2, v2, normX, normY, normZ);
-        addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x3, y3, z3, u3, v3, normX, normY, normZ);
+    private static void renderTris(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, ModelFace modelFace) {
+        float[] x = modelFace.getX();
+        float[] y = modelFace.getY();
+        float[] z = modelFace.getZ();
+        float[] u = modelFace.getU();
+        float[] v = modelFace.getV();
+        float normX = modelFace.getNormX();
+        float normY = modelFace.getNormY();
+        float normZ = modelFace.getNormZ();
+
+
+        addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x[0], y[0], z[0], u[0] / getTexWidth(), v[0] / getTexHeight(), normX, normY, normZ);
+        addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x[1], y[1], z[1], u[1] / getTexWidth(), v[1] / getTexHeight(), normX, normY, normZ);
+        addVertex(matrix4f, matrix3f, vertexConsumer, red, green, blue, alpha, x[2], y[2], z[2], u[2] / getTexWidth(), v[2] / getTexHeight(), normX, normY, normZ);
     }
 
     private static void addVertex(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, float x, float y, float z, float u, float v, float normX, float normY, float normZ) {
